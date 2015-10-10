@@ -13,12 +13,14 @@ void handle_error( char* message, int error ) {
     exit( 1 );
 }
 
-void draw_bitmap( FT_Bitmap* bitmap )
+void draw_bitmap( unsigned char* buffer,
+                  unsigned int width,
+                  unsigned int height )
 {
     int i, j;
-    for ( i = 0; i < bitmap->rows; i++ ) {
-        for ( j = 0; j < bitmap->pitch; j++) {
-            putchar( bitmap->buffer[( i*bitmap->pitch ) + j] == 0 ? ' ' : '#' );
+    for ( i = 0; i < height; i++ ) {
+        for ( j = 0; j < width; j++) {
+            putchar( buffer[( i * width ) + j] == 0 ? ' ' : '#' );
         }
         putchar( '\n' );
     }
@@ -60,7 +62,9 @@ void render_glyph( char* ch,
     *error = FT_Render_Glyph( slot, FT_RENDER_MODE_MONO );
     if ( *error ) handle_error( "render glyph error", *error );
         
-    // draw_bitmap( &slot->bitmap );
+    draw_bitmap( slot->bitmap.buffer,
+                 slot->bitmap.pitch,
+                 slot->bitmap.rows );
     printf( "%c\n", *ch );
 }
 

@@ -62,10 +62,21 @@ void render_glyph( char* ch,
     *error = FT_Render_Glyph( slot, FT_RENDER_MODE_MONO );
     if ( *error ) handle_error( "render glyph error", *error );
         
-    draw_bitmap( slot->bitmap.buffer,
+    /* draw_bitmap( slot->bitmap.buffer,
                  slot->bitmap.pitch,
                  slot->bitmap.rows );
+    */
     printf( "%c\n", *ch );
+}
+
+void bit_blit( unsigned char* src,
+               unsigned int src_width,
+               unsigned int src_height,
+               unsigned char* dst,
+               int x,
+               int y )
+{
+    // FIXME: copy glyph to image starting at position x, y 
 }
 
 void render( char* text )
@@ -77,10 +88,11 @@ void render( char* text )
     FT_UInt glyph_index;
     FT_Pos asc, des, adv; 
 
-    int n, num_chars;
+    int n, num_chars, x, y;
     int max_ascent, max_descent;
     int target_width, target_height, target_baseline;
-
+    unsigned char* image;
+    
     setup( &lib, &face, &error );
 
     slot = face->glyph;
@@ -96,7 +108,7 @@ void render( char* text )
         asc = slot->metrics.horiBearingY / 64;
         des = ( slot->metrics.height / 64 ) - asc;
         adv = slot->metrics.horiAdvance / 64;
-        printf("Ascent: %ld; Descent: %ld; Advance: %ld\n", asc, des, adv);
+        printf( "Ascent: %ld; Descent: %ld; Advance: %ld\n", asc, des, adv );
 
         target_width += adv;
         max_ascent = max( asc, max_ascent );
@@ -104,11 +116,25 @@ void render( char* text )
     }
     
     target_height = max_ascent + max_descent;
-    printf( "Bitmap metrics -- width: %d; height: %d; baseline: %d",
+    printf( "Bitmap metrics -- width: %d; height: %d; baseline: %d\n",
             target_width,
             target_height,
             max_descent );
 
+    image = ( char* ) calloc( target_height * target_width, sizeof( char ) );
+
+    x = 0;
+    for ( n = 0; n < num_chars; n++ )
+    {
+        render_glyph( &text[n], &face, slot, &glyph_index, &error );
+        y = target_height - max_descent - ( slot->metrics.horiBearingY / 64 );
+        bit_blit( slot->bitmap.buffer,
+                  slot->bitmap.pitch,
+                  slot->bitmap.rows,
+                  image, x, y );
+        x += slot->metrics.horiAdvance / 64;
+    } 
+    free( image );
     FT_Done_Face( face );
     FT_Done_FreeType( lib );
 }

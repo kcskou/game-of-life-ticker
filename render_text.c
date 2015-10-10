@@ -13,10 +13,17 @@ void draw_bitmap( FT_Bitmap* bitmap )
     int i, j;
     for ( i = 0; i < bitmap->rows; i++ ) {
         for ( j = 0; j < bitmap->pitch; j++) {
-            putchar( bitmap->buffer[( i*bitmap->pitch ) + j] == 0 ? ' ' : '*' );
+            putchar( bitmap->buffer[( i*bitmap->pitch ) + j] == 0 ? ' ' : '#' );
         }
         putchar( '\n' );
     }
+}
+
+void print_metrics( FT_Glyph_Metrics* metrics ) {
+    FT_Pos asc = metrics->horiBearingY / 64;
+    FT_Pos des = ( metrics->height / 64 ) - asc;
+    FT_Pos adv = metrics->horiAdvance / 64;
+    printf("Ascent: %ld; Descent: %ld; Advance: %ld\n", asc, des, adv);
 }
 
 void render( char* text )
@@ -39,10 +46,10 @@ void render( char* text )
     if ( error ) handle_error( "new face error", error );
     
     error = FT_Set_Char_Size( face,
-                              16 * 64,
+                              100 * 64,
                               0,
-                              2000,
-                              100 );
+                              72,
+                              0 );
     if ( error ) handle_error( "set char size error", error );
     
     slot = face->glyph;
@@ -50,7 +57,6 @@ void render( char* text )
     
     for ( n = 0; n < num_chars; n++ )
     {
-        printf("%c\n", text[n]);
         glyph_index = FT_Get_Char_Index( face, text[n] );    
         error = FT_Load_Glyph( face,
                                glyph_index,
@@ -61,6 +67,7 @@ void render( char* text )
         if ( error ) handle_error( "render glyph error", error );
         
         draw_bitmap( &slot->bitmap );
+        print_metrics( &slot->metrics );
     }
 
     FT_Done_Face( face );

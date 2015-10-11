@@ -40,9 +40,9 @@ void setup( FT_Library* lib,
     if ( *error ) handle_error( "new face error", *error );
     
     *error = FT_Set_Char_Size( *face,
-                              10 * 64,
+                              100 * 64,
                               0,
-                              1000,
+                              72,
                               0 );
     if ( *error ) handle_error( "set char size error", *error );
 }

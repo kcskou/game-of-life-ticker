@@ -73,10 +73,22 @@ void bit_blit( unsigned char* src,
                unsigned int src_width,
                unsigned int src_height,
                unsigned char* dst,
+               unsigned int dst_width,
                int x,
                int y )
 {
-    // FIXME: copy glyph to image starting at position x, y 
+    int i, j;
+    int src_index = 0;
+    int row_offset = dst_width - src_width;
+    int dst_index = y * dst_width + x;
+    for ( i = 0; i < src_height; i++ )
+    {
+        for ( j = 0; j < src_width; j++ )
+        {
+            dst[dst_index++] = src[src_index++];
+        }
+        dst_index += row_offset;
+    }
 }
 
 void render( char* text )
@@ -131,9 +143,13 @@ void render( char* text )
         bit_blit( slot->bitmap.buffer,
                   slot->bitmap.pitch,
                   slot->bitmap.rows,
-                  image, x, y );
-        x += slot->metrics.horiAdvance / 64;
-    } 
+                  image,
+                  target_width,
+                  x, y );
+        x += ( slot->metrics.horiAdvance / 64 );
+    }
+
+    draw_bitmap( image, target_width, target_height );
     free( image );
     FT_Done_Face( face );
     FT_Done_FreeType( lib );

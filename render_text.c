@@ -84,7 +84,7 @@ void bit_blit( unsigned char* src,
     {
         for ( j = 0; j < src_width; j++ )
         {
-            dst[dst_index++] = src[src_index++];
+            dst[dst_index++] |= src[src_index++];
         }
         dst_index += row_offset;
     }

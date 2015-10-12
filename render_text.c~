@@ -17,8 +17,7 @@ void draw_bitmap( unsigned char* buffer,
                   unsigned int width,
                   unsigned int height )
 {
-    int i, j;
-    for ( i = 0; i < height; i++ ) {
+    int i, j; for ( i = 0; i < height; i++ ) {
         for ( j = 0; j < width; j++) {
             putchar( buffer[( i * width ) + j] == 0 ? '.' : '#' );
         }
@@ -40,7 +39,7 @@ void setup( FT_Library* lib,
     if ( *error ) handle_error( "new face error", *error );
     
     *error = FT_Set_Char_Size( *face,
-                              16,
+                              6 * 64,
                               0,
                               1024,
                               768 );
@@ -84,7 +83,7 @@ void bit_blit( unsigned char* src,
     {
         for ( j = 0; j < src_width; j++ )
         {
-            dst[dst_index++] = src[src_index++];
+            dst[dst_index++] |= src[src_index++];
         }
         dst_index += row_offset;
     }

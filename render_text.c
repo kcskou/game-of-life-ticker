@@ -20,7 +20,7 @@ void draw_bitmap( unsigned char* buffer,
     int i, j;
     for ( i = 0; i < height; i++ ) {
         for ( j = 0; j < width; j++) {
-            putchar( buffer[( i * width ) + j] == 0 ? ' ' : '#' );
+            putchar( buffer[( i * width ) + j] == 0 ? '.' : '#' );
         }
         putchar( '\n' );
     }
@@ -40,10 +40,10 @@ void setup( FT_Library* lib,
     if ( *error ) handle_error( "new face error", *error );
     
     *error = FT_Set_Char_Size( *face,
-                              100 * 64,
+                              16 * 64,
                               0,
-                              72,
-                              0 );
+                              1024,
+                              768 );
     if ( *error ) handle_error( "set char size error", *error );
 }
 
@@ -66,7 +66,6 @@ void render_glyph( char* ch,
                  slot->bitmap.pitch,
                  slot->bitmap.rows );
     */
-    printf( "%c\n", *ch );
 }
 
 void bit_blit( unsigned char* src,
@@ -91,6 +90,21 @@ void bit_blit( unsigned char* src,
     }
 }
 
+FT_Pos kerning_offset( FT_Face* face, char prev, char curr )
+{
+    if ( prev == 0 ) {
+        return 0;
+    } else {
+        FT_UInt prev_glyph_index = FT_Get_Char_Index( *face, prev );
+        FT_UInt curr_glyph_index = FT_Get_Char_Index( *face, curr );
+        FT_Vector* kerning = ( FT_Vector* ) malloc( sizeof( FT_Vector ) );
+        FT_Get_Kerning( *face, prev_glyph_index, curr_glyph_index, FT_KERNING_UNFITTED, kerning );
+        FT_Pos kerning_x = kerning->x / 64;
+        free( kerning );
+        return kerning_x;
+    }
+}
+
 void render( char* text )
 {
     FT_Library lib;
@@ -98,11 +112,12 @@ void render( char* text )
     FT_Error error;
     FT_GlyphSlot slot;
     FT_UInt glyph_index;
-    FT_Pos asc, des, adv; 
+    FT_Pos asc, des, adv, glyph_width, kerning_x; 
 
     int n, num_chars, x, y;
     int max_ascent, max_descent;
     int target_width, target_height, target_baseline;
+    char prev_char;
     unsigned char* image;
     
     setup( &lib, &face, &error );
@@ -112,19 +127,25 @@ void render( char* text )
     target_width = 0;
     max_ascent = 0;
     max_descent = 0;
+    prev_char = 0;
 
     for ( n = 0; n < num_chars; n++ )
     {
+        printf( "%c\n", text[n] );
         render_glyph( &text[n], &face, slot, &glyph_index, &error );
        
         asc = slot->metrics.horiBearingY / 64;
         des = ( slot->metrics.height / 64 ) - asc;
-        adv = slot->metrics.horiAdvance / 64;
-        printf( "Ascent: %ld; Descent: %ld; Advance: %ld\n", asc, des, adv );
+        adv = slot->advance.x / 64;
+        glyph_width = slot->metrics.width / 64;
+        printf( "Ascent: %ld; Descent: %ld; Advance: %ld; Width: %ld\n", asc, des, adv, glyph_width );
 
-        target_width += adv;
         max_ascent = max( asc, max_ascent );
         max_descent = max( des, max_descent );
+        kerning_x = kerning_offset( &face, prev_char, text[n] );
+        printf( "prev: %c, curr: %c, kerning: %ld\n", prev_char, text[n], kerning_x );
+        target_width += max( adv + kerning_x, glyph_width );
+        prev_char = text[n];
     }
     
     target_height = max_ascent + max_descent;
@@ -136,9 +157,12 @@ void render( char* text )
     image = ( char* ) calloc( target_height * target_width, sizeof( char ) );
 
     x = 0;
+    prev_char = 0;
     for ( n = 0; n < num_chars; n++ )
     {
         render_glyph( &text[n], &face, slot, &glyph_index, &error );
+        kerning_x = kerning_offset( &face, prev_char, text[n] );
+        x += kerning_x;
         y = target_height - max_descent - ( slot->metrics.horiBearingY / 64 );
         bit_blit( slot->bitmap.buffer,
                   slot->bitmap.pitch,
@@ -146,7 +170,8 @@ void render( char* text )
                   image,
                   target_width,
                   x, y );
-        x += ( slot->metrics.horiAdvance / 64 );
+        x += ( slot->advance.x / 64 );
+        prev_char = text[n];
     }
 
     draw_bitmap( image, target_width, target_height );

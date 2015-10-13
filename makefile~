@@ -2,5 +2,5 @@ CC=gcc
 CFLAGS=`freetype-config --cflags`
 LDFLAGS=`freetype-config --libs`
 
-render_text: render_text.c
-	$(CC) -o render_text render_text.c $(CFLAGS) $(LDFLAGS)
+render_text:
+	$(CC) -g -Wall -o render_text render_text.c $(CFLAGS) $(LDFLAGS)

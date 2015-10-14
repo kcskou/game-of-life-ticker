@@ -46,7 +46,7 @@ void setup( FT_Library* lib,
     if ( *error ) handle_error( "new face error", *error );
     
     *error = FT_Set_Char_Size( *face,
-                              24 * 64,
+                              12 * 64,
                               0,
                               72,
                               0 );
@@ -99,6 +99,7 @@ FT_Pos kerning_offset( FT_Face* face, char prev, char curr )
         FT_Vector* kerning = ( FT_Vector* ) malloc( sizeof( FT_Vector ) );
         FT_Get_Kerning( *face, prev_glyph_index, curr_glyph_index, FT_KERNING_UNFITTED, kerning );
         FT_Pos kerning_x = kerning->x / 64;
+        printf("prev: %c; curr: %c; kerning: %ld\n", prev, curr, kerning_x);
         free( kerning );
         return kerning_x;
     }
@@ -159,12 +160,13 @@ void render( char* text )
         des = ( slot->metrics.height / 64 ) - asc;
         adv = slot->advance.x / 64;
         glyph_width = slot->metrics.width / 64;
-
+        
         max_ascent = max( asc, max_ascent );
         max_descent = max( des, max_descent );
         kerning_x = kerning_offset( &face, prev_char, text[n] );
         target_width += max( adv + kerning_x, glyph_width );
         prev_char = text[n];
+        printf( "asc: %ld; des: %ld\n", asc, des );
     }
     
     target_height = max_ascent + max_descent;

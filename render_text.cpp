@@ -1,12 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <iostream>
+#include <cstdlib>
+#include <string>
 #include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+using namespace std;
 
-void handle_error( char* message, int error ) {
-    printf( "%s: %d\n", message, error );
+void handle_error( string message, int error ) {
+    cout << message << ": " << error << "\n";
     exit( 1 );
 }
 
@@ -14,7 +15,7 @@ void draw_bitmap( unsigned char* buffer,
                   unsigned int width,
                   unsigned int height )
 {
-    int i, j;
+    unsigned int i, j;
     for ( i = 0; i < height; i++ ) {
         for ( j = 0; j < width; j++) {
             putchar( buffer[( i * width ) + j] == 0 ? '.' : '#' );
@@ -66,7 +67,7 @@ void bit_blit( unsigned char* src,
                int x,
                int y )
 {
-    int i, j;
+    unsigned int i, j;
     int src_index = 0;
     int row_offset = dst_width - src_width;
     int dst_index = y * dst_width + x;
@@ -100,14 +101,14 @@ void unpack_mono_bitmap( FT_Bitmap src, unsigned char* dst_buffer )
     int i, j, k;
     int num_bits_done, dst_start_index, bits_to_unpack;
     char byte, bit;
-    for ( i = 0; i < src.rows; i++ )
+    for ( i = 0; i < ( int ) src.rows; i++ )
     {
         for ( j = 0; j < src.pitch; j++ )
         {
             byte = src.buffer[i * src.pitch + j];
             num_bits_done = j * 8;
             dst_start_index = i * src.width + num_bits_done;
-            bits_to_unpack = std::min( (int) src.width - num_bits_done, 8 );
+            bits_to_unpack = std::min( ( int ) src.width - num_bits_done, 8 );
             for ( k = 0; k < bits_to_unpack; k++ )
             {
                 bit = byte & (1 << (7 - k));

@@ -4,8 +4,14 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-int max( int a, int b ) {
+int max( int a, int b )
+{
     return ( a > b ) ? a : b;
+}
+
+int min( int a, int b )
+{
+    return ( a < b ) ? a : b;
 }
 
 void handle_error( char* message, int error ) {
@@ -40,7 +46,7 @@ void setup( FT_Library* lib,
     if ( *error ) handle_error( "new face error", *error );
     
     *error = FT_Set_Char_Size( *face,
-                              20 * 64,
+                              24 * 64,
                               0,
                               72,
                               0 );
@@ -59,11 +65,6 @@ void render_glyph( char* ch,
                             FT_LOAD_RENDER |
                             FT_LOAD_TARGET_MONO );
     if ( *error ) handle_error( "load glyph error", *error );
-        
-    /* draw_bitmap( slot->bitmap.buffer,
-                 slot->bitmap.pitch,
-                 slot->bitmap.rows );
-    */
 }
 
 void bit_blit( unsigned char* src,
@@ -110,14 +111,12 @@ void unpack_mono_bitmap( FT_Bitmap src, unsigned char* dst_buffer )
     char byte, bit;
     for ( i = 0; i < src.rows; i++ )
     {
-        printf("pitch: %d\n", src.pitch);
         for ( j = 0; j < src.pitch; j++ )
         {
             byte = src.buffer[i * src.pitch + j];
             num_bits_done = j * 8;
             dst_start_index = i * src.width + num_bits_done;
-            bits_to_unpack = ( src.width - num_bits_done ) < 8 ? ( src.width - num_bits_done ) : 8;
-            printf("bits_to_unpack: %d\n", bits_to_unpack);
+            bits_to_unpack = min( src.width - num_bits_done, 8 );
             for ( k = 0; k < bits_to_unpack; k++ )
             {
                 bit = byte & (1 << (7 - k));
@@ -138,7 +137,7 @@ void render( char* text )
 
     int n, num_chars, x, y;
     int max_ascent, max_descent;
-    int target_width, target_height, target_baseline;
+    int target_width, target_height;
     char prev_char;
     unsigned char* unpacked_bitmap;
     unsigned char* image;
@@ -154,29 +153,21 @@ void render( char* text )
 
     for ( n = 0; n < num_chars; n++ )
     {
-        printf( "%c\n", text[n] );
         render_glyph( &text[n], &face, slot, &glyph_index, &error );
        
         asc = slot->metrics.horiBearingY / 64;
         des = ( slot->metrics.height / 64 ) - asc;
         adv = slot->advance.x / 64;
         glyph_width = slot->metrics.width / 64;
-        printf( "Ascent: %ld; Descent: %ld; Advance: %ld; Width: %ld\n", asc, des, adv, glyph_width );
 
         max_ascent = max( asc, max_ascent );
         max_descent = max( des, max_descent );
         kerning_x = kerning_offset( &face, prev_char, text[n] );
-        printf( "prev: %c, curr: %c, kerning: %ld\n", prev_char, text[n], kerning_x );
         target_width += max( adv + kerning_x, glyph_width );
         prev_char = text[n];
     }
     
     target_height = max_ascent + max_descent;
-    printf( "Bitmap metrics -- width: %d; height: %d; baseline: %d\n",
-            target_width,
-            target_height,
-            max_descent );
-
     image = calloc( target_height * target_width, sizeof *image );
 
     x = 0;
@@ -189,7 +180,6 @@ void render( char* text )
         y = target_height - max_descent - ( slot->metrics.horiBearingY / 64 );
         
         unpacked_bitmap = calloc( slot->bitmap.width * slot->bitmap.rows, sizeof *unpacked_bitmap );
-        printf("printing %c\n", text[n]);
         unpack_mono_bitmap( slot->bitmap, unpacked_bitmap );
         bit_blit( unpacked_bitmap,
                   slot->bitmap.width,

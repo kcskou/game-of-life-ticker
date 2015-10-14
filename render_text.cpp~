@@ -1,18 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-int max( int a, int b )
-{
-    return ( a > b ) ? a : b;
-}
-
-int min( int a, int b )
-{
-    return ( a < b ) ? a : b;
-}
 
 void handle_error( char* message, int error ) {
     printf( "%s: %d\n", message, error );
@@ -116,7 +107,7 @@ void unpack_mono_bitmap( FT_Bitmap src, unsigned char* dst_buffer )
             byte = src.buffer[i * src.pitch + j];
             num_bits_done = j * 8;
             dst_start_index = i * src.width + num_bits_done;
-            bits_to_unpack = min( src.width - num_bits_done, 8 );
+            bits_to_unpack = std::min( (int) src.width - num_bits_done, 8 );
             for ( k = 0; k < bits_to_unpack; k++ )
             {
                 bit = byte & (1 << (7 - k));
@@ -133,7 +124,7 @@ void render( char* text )
     FT_Error error;
     FT_GlyphSlot slot;
     FT_UInt glyph_index;
-    FT_Pos asc, des, adv, glyph_width, kerning_x; 
+    int asc, des, adv, glyph_width, kerning_x; 
 
     int n, num_chars, x, y;
     int max_ascent, max_descent;
@@ -160,15 +151,15 @@ void render( char* text )
         adv = slot->advance.x / 64;
         glyph_width = slot->metrics.width / 64;
 
-        max_ascent = max( asc, max_ascent );
-        max_descent = max( des, max_descent );
+        max_ascent = std::max( asc, max_ascent );
+        max_descent = std::max( des, max_descent );
         kerning_x = kerning_offset( &face, prev_char, text[n] );
-        target_width += max( adv + kerning_x, glyph_width );
+        target_width += std::max( adv + kerning_x, glyph_width );
         prev_char = text[n];
     }
     
     target_height = max_ascent + max_descent;
-    image = calloc( target_height * target_width, sizeof *image );
+    image = ( unsigned char* ) calloc( target_height * target_width, sizeof *image );
 
     x = 0;
     prev_char = 0;
@@ -179,7 +170,7 @@ void render( char* text )
         x += kerning_x;
         y = target_height - max_descent - ( slot->metrics.horiBearingY / 64 );
         
-        unpacked_bitmap = calloc( slot->bitmap.width * slot->bitmap.rows, sizeof *unpacked_bitmap );
+        unpacked_bitmap = ( unsigned char * ) calloc( slot->bitmap.width * slot->bitmap.rows, sizeof *unpacked_bitmap );
         unpack_mono_bitmap( slot->bitmap, unpacked_bitmap );
         bit_blit( unpacked_bitmap,
                   slot->bitmap.width,

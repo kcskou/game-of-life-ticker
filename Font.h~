@@ -1,0 +1,30 @@
+#ifndef FONT_H
+#define FONT_H
+
+#include <string>
+#include "Bitmap.h" 
+#include "Glyph.h"
+#include <ft2build.h>
+
+struct Dimension {
+  int width, height, baseline;
+};
+
+class Font {
+ public:
+  Font(string, int);
+  ~Font();
+
+  Bitmap* render(string);
+
+ private:
+  Dimension get_dimension(string);
+  Glyph* render_glyph(char);
+  int kerning_offset(char, char);
+  void handle_error(string, int);
+
+  FT_Library lib;
+  FT_Face face;
+};
+
+#endif

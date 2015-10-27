@@ -1,8 +1,17 @@
 CC=g++
-CFLAGS=`freetype-config --cflags`
+CFLAGS=`freetype-config --cflags` -g -Wall -std=c++11
 LDFLAGS=`freetype-config --libs`
 
-render_text: render_text.o Font.o Bitmap.o Glyph.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -g -Wall -std=c++11 render_text.o Font.o Bitmap.o Glyph.o -o render_text
+OBJECTS=render_text.o Font.o Glyph.o Bitmap.o 
+SOURCE=render_text.cpp Font.cpp Glyph.cpp Bitmap.cpp
+
+all:render_text
+
+render_text: $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o render_text $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< $(LDFLAGS)
+
 clean:
-	rm -f *~ *.o
+	rm -f *~ *.o render_text

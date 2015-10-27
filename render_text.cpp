@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
   Font* font = new Font("arial.ttf", 24);
   Bitmap* bitmap = font->render(argv[1]);
-  bitmap->print(); // FIXME override operator << to print to cout
+  bitmap->print();
   delete bitmap;
   delete font;
   return 0;

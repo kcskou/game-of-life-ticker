@@ -47,7 +47,7 @@ Bitmap* Font::render(std::string text) {
 
 Dimension Font::get_dimension(std::string text) {
   long kerning_x;
-  int target_width = 0;
+  long target_width = 0;
   long max_ascent = 0;
   long max_descent = 0;
   char prev_char = 0;
@@ -65,6 +65,7 @@ Dimension Font::get_dimension(std::string text) {
     prev_char = ch;
     delete glyph;
   }
+
   dim.width = target_width;
   dim.height = max_ascent + max_descent;
   dim.baseline = max_descent;

@@ -10,9 +10,9 @@
 #include "Glyph.h"
 
 struct Dimension {
-  int width;
-  int height;
-  int baseline;
+  long width;
+  long height;
+  long baseline;
 };
 
 class Font {

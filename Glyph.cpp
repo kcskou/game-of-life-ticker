@@ -20,8 +20,7 @@ long Glyph::descent() const { return descent_; }
 long Glyph::advance() const { return advance_; }
 
 Bitmap* Glyph::unpack_mono_bitmap(FT_Bitmap src) {
-  unsigned char* dst_buffer = 
-      (unsigned char*) calloc(src.width * src.rows, sizeof *dst_buffer);
+  unsigned char* dst_buffer = new unsigned char[src.width * src.rows]();
   int i, j, k;
   int num_bits_done, dst_start_index, bits_to_unpack;
   char byte, bit;

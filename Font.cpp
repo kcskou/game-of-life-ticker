@@ -38,6 +38,7 @@ Bitmap* Font::render(std::string text) {
     bitmap->bit_blit(glyph->bitmap(), x, y);
     x += glyph->advance();
     prev_char = ch;
+    delete glyph;
   }
   return bitmap;
 }

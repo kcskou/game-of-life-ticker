@@ -5,7 +5,7 @@
 Bitmap::Bitmap(unsigned int width, unsigned int height)
     : width_{width},
       height_{height} {
-  pixels_ = (unsigned char*) calloc(width * height, sizeof *pixels_);
+  pixels_ = new unsigned char[width * height]();
 } 
 
 Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char *pixels) 
@@ -13,7 +13,7 @@ Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char *pixels)
       height_{height},
       pixels_{pixels} {}
 
-Bitmap::~Bitmap() { delete pixels_; }
+Bitmap::~Bitmap() { delete[] pixels_; }
 
 void Bitmap::bit_blit(Bitmap* src, int x, int y) {
   unsigned int i, j;

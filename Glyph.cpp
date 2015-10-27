@@ -1,7 +1,9 @@
-#include "Glyph.h"
 #include <algorithm>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#include "Glyph.h"
 
 Glyph::Glyph(FT_GlyphSlot slot)
     : bitmap_{unpack_mono_bitmap(slot->bitmap)},

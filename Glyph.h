@@ -1,10 +1,11 @@
 #ifndef GLYPH_H
 #define GLYPH_H
 
-#include "Bitmap.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
  
+#include "Bitmap.h"
+
 class Glyph {
  public:
   Glyph(FT_GlyphSlot);

@@ -2,9 +2,12 @@
 #define FONT_H
 
 #include <string>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "Bitmap.h" 
 #include "Glyph.h"
-#include <ft2build.h>
 
 struct Dimension {
   int width;

@@ -1,5 +1,6 @@
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
+
 #include "Bitmap.h"
 
 Bitmap::Bitmap(unsigned int width, unsigned int height)

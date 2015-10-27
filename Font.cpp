@@ -1,9 +1,11 @@
-#include "Font.h"
+#include <algorithm>
 #include <iostream>
 #include <string>
-#include <algorithm>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#include "Font.h"
 
 Font::Font(std::string filename, int size) {
   FT_Error error;

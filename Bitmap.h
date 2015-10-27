@@ -10,10 +10,13 @@ class Bitmap {
   void bit_blit(Bitmap*, int, int);
   void print();
 
+  unsigned int width() const;
+  unsigned int height() const;
+
  private:
-  unsigned int m_width;
-  unsigned int m_height;
-  unsigned char *m_pixels;
+  unsigned int width_;
+  unsigned int height_;
+  unsigned char* pixels_;
 };
 
 #endif

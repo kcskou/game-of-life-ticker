@@ -10,22 +10,20 @@ class Glyph {
   Glyph(FT_GlyphSlot);
   ~Glyph();
    
-  Bitmap* get_bitmap();
-  int get_width();
-  int get_height();
-  int get_ascent();
-  int get_descent();
-  int get_advance();
+  Bitmap* bitmap() const;
+  unsigned int width() const;
+  unsigned int height() const;
+  long ascent() const;
+  long descent() const;
+  long advance() const;
 
  private:
   Bitmap* unpack_mono_bitmap(FT_Bitmap);
 
-  Bitmap* bitmap;
-  int width;
-  int height;
-  int ascent;
-  int descent;
-  int advance;
+  Bitmap* bitmap_;
+  long ascent_;
+  long descent_;
+  long advance_;
 };
 
 #endif

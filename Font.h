@@ -7,7 +7,9 @@
 #include <ft2build.h>
 
 struct Dimension {
-  int width, height, baseline;
+  int width;
+  int height;
+  int baseline;
 };
 
 class Font {
@@ -20,11 +22,11 @@ class Font {
  private:
   Dimension get_dimension(std::string);
   Glyph* render_glyph(char);
-  int kerning_offset(char, char);
-  void handle_error(std::string, int);
+  long kerning_offset(char, char);
+  void print_error(std::string, int);
 
-  FT_Library lib;
-  FT_Face face;
+  FT_Library lib_;
+  FT_Face face_;
 };
 
 #endif

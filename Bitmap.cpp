@@ -3,26 +3,26 @@
 #include "Bitmap.h"
 
 Bitmap::Bitmap(unsigned int width, unsigned int height)
-    : m_width{width},
-      m_height{height} {
-  m_pixels = (unsigned char*) calloc(width * height, sizeof *m_pixels);
+    : width_{width},
+      height_{height} {
+  pixels_ = (unsigned char*) calloc(width * height, sizeof *pixels_);
 } 
 
 Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char *pixels) 
-    : m_width{width},
-      m_height{height},
-      m_pixels{pixels} {}
+    : width_{width},
+      height_{height},
+      pixels_{pixels} {}
 
-Bitmap::~Bitmap() { delete m_pixels; }
+Bitmap::~Bitmap() { delete pixels_; }
 
 void Bitmap::bit_blit(Bitmap* src, int x, int y) {
   unsigned int i, j;
   int src_index = 0;
-  int row_offset = m_width - src->m_width;
-  int dst_index = y * m_width + x;
-  for (i = 0; i < src->m_height; i++) {
-    for (j = 0; j < src->m_width; j++) {
-      m_pixels[dst_index++] |= src->m_pixels[src_index++];
+  int row_offset = width_ - src->width_;
+  int dst_index = y * width_ + x;
+  for (i = 0; i < src->height_; i++) {
+    for (j = 0; j < src->width_; j++) {
+      pixels_[dst_index++] |= src->pixels_[src_index++];
     }
     dst_index += row_offset;
   }
@@ -30,10 +30,13 @@ void Bitmap::bit_blit(Bitmap* src, int x, int y) {
 
 void Bitmap::print() {
   unsigned int i, j;
-  for (i = 0; i < m_height; i++) {
-    for (j = 0; j < m_width; j++) {
-      std::cout << (m_pixels[(i * m_width) + j] == 0 ? '.' : '#');
+  for (i = 0; i < height_; i++) {
+    for (j = 0; j < width_; j++) {
+      std::cout << (pixels_[(i * width_) + j] == 0 ? '.' : '#');
     }
     std::cout << std::endl;
   }
 }
+
+unsigned int Bitmap::width() const { return width_; }
+unsigned int Bitmap::height() const { return height_; }

@@ -41,10 +41,10 @@ Pattern* Pattern::from_rle(std::string file) {
         }
       } else {
         if (std::regex_search(line, match, re_x)) {
-          width = std::stoul(match[1].str());
+          width = static_cast<unsigned int>(std::stoul(match[1].str()));
         }
         if (std::regex_search(line, match, re_y)) {
-          height = std::stoul(match[1].str());
+          height = static_cast<unsigned int>(std::stoul(match[1].str()));
         }
         if (std::regex_search(line, match, re_rule)) {
           rule = match[1].str();

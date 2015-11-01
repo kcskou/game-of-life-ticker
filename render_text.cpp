@@ -18,18 +18,18 @@ int main(int argc, char** argv) {
   delete font;
 
   // testing rle parser
-  //Pattern* glider = Pattern::from_rle("glider.rle");
-  //Pattern* loaf = Pattern::from_rle("loaf.rle");
-  // Pattern* weekender = Pattern::from_rle("weekender.rle");
-  //std::cout << "print glider:" << std::endl;
-  //glider->bitmap()->print();
-  //std::cout << "print loaf:" << std::endl;
-  //loaf->bitmap()->print();
-  // std::cout << "print weekender:" << std::endl;
-  // weekender->bitmap()->print();
-  //delete glider;
-  //delete loaf;
-  // delete weekender;
+  Pattern* glider = Pattern::from_rle("glider.rle");
+  Pattern* loaf = Pattern::from_rle("loaf.rle");
+  Pattern* weekender = Pattern::from_rle("weekender.rle");
+  std::cout << "print glider:" << std::endl;
+  glider->bitmap()->print();
+  std::cout << "print loaf:" << std::endl;
+  loaf->bitmap()->print();
+  std::cout << "print weekender:" << std::endl;
+  weekender->bitmap()->print();
+  delete glider;
+  delete loaf;
+  delete weekender;
 
   return 0;
 }

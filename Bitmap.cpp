@@ -5,13 +5,15 @@
 
 Bitmap::Bitmap(unsigned int width, unsigned int height)
     : width_{width},
-      height_{height} {
+      height_{height},
+      cursor_{0} {
   pixels_ = new unsigned char[width * height]();
 }
 
 Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char* pixels)
     : width_{width},
       height_{height},
+      cursor_{0},
       pixels_{pixels} {}
 
 Bitmap::~Bitmap() { delete[] pixels_; }

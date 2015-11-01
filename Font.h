@@ -1,12 +1,12 @@
-#ifndef FONT_H
-#define FONT_H
+#ifndef FONT_H_
+#define FONT_H_
 
 #include <string>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "Bitmap.h" 
+#include "Bitmap.h"
 #include "Glyph.h"
 
 struct Dimension {
@@ -32,4 +32,4 @@ class Font {
   FT_Face face_;
 };
 
-#endif
+#endif  // FONT_H_

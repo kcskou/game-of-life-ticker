@@ -7,9 +7,9 @@ Bitmap::Bitmap(unsigned int width, unsigned int height)
     : width_{width},
       height_{height} {
   pixels_ = new unsigned char[width * height]();
-} 
+}
 
-Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char *pixels) 
+Bitmap::Bitmap(unsigned int width, unsigned int height, unsigned char* pixels)
     : width_{width},
       height_{height},
       pixels_{pixels} {}
@@ -29,6 +29,14 @@ void Bitmap::bit_blit(Bitmap* src, int x, int y) {
   }
 }
 
+bool Bitmap::set_bits(unsigned int num_bits) {
+  return write_bits(num_bits, true);
+}
+
+bool Bitmap::clear_bits(unsigned int num_bits) {
+  return write_bits(num_bits, false);
+}
+
 void Bitmap::print() {
   unsigned int i, j;
   for (i = 0; i < height_; i++) {
@@ -39,5 +47,15 @@ void Bitmap::print() {
   }
 }
 
+bool Bitmap::write_bits(unsigned int num_bits, bool set_bits) {
+  unsigned char bit_value = set_bits ? 1 : 0;
+  while (num_bits--) {
+    if (cursor_ >= width_ * height_) { return false; }
+    pixels_[cursor_++] = bit_value;
+  }
+  return true;
+}
+
 unsigned int Bitmap::width() const { return width_; }
 unsigned int Bitmap::height() const { return height_; }
+unsigned int Bitmap::cursor() const { return cursor_; }

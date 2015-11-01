@@ -1,16 +1,16 @@
-#ifndef GLYPH_H
-#define GLYPH_H
+#ifndef GLYPH_H_
+#define GLYPH_H_
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
- 
+
 #include "Bitmap.h"
 
 class Glyph {
  public:
   Glyph(FT_GlyphSlot);
   ~Glyph();
-   
+
   Bitmap* bitmap() const;
   unsigned int width() const;
   unsigned int height() const;
@@ -27,4 +27,4 @@ class Glyph {
   long advance_;
 };
 
-#endif
+#endif // GLYPH_H_

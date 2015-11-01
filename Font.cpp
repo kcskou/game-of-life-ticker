@@ -11,7 +11,7 @@ Font::Font(std::string filename, int size) {
   FT_Error error;
   error = FT_Init_FreeType(&lib_);
   if (error) print_error("freetype init error", error);
-    
+
   error = FT_New_Face(lib_, filename.c_str(), 0, &face_);
   if (error) print_error("new face error", error);
 
@@ -30,7 +30,9 @@ Bitmap* Font::render(std::string text) {
   int y;
   int x = 0;
   char prev_char = 0;
-  Bitmap* bitmap = new Bitmap(dim.width, dim.height);
+  unsigned int width = static_cast<unsigned int>(dim.width);
+  unsigned int height = static_cast<unsigned int>(dim.height);
+  Bitmap* bitmap = new Bitmap(width, height);
   Glyph* glyph;
 
   for (char ch : text) {
@@ -53,8 +55,6 @@ Dimension Font::get_dimension(std::string text) {
   char prev_char = 0;
 
   Glyph* glyph;
-  Dimension dim;
-
   for (char ch : text) {
     glyph = render_glyph(ch);
     max_ascent = std::max(glyph->ascent(), max_ascent);
@@ -66,6 +66,7 @@ Dimension Font::get_dimension(std::string text) {
     delete glyph;
   }
 
+  Dimension dim;
   dim.width = target_width;
   dim.height = max_ascent + max_descent;
   dim.baseline = max_descent;
@@ -76,7 +77,7 @@ Glyph* Font::render_glyph(char ch) {
   FT_Error error;
   FT_UInt glyph_index;
   glyph_index = FT_Get_Char_Index(face_, ch);
-  error = FT_Load_Glyph(face_, glyph_index, 
+  error = FT_Load_Glyph(face_, glyph_index,
                         FT_LOAD_RENDER | FT_LOAD_TARGET_MONO);
   if (error) print_error("load glyph error", error);
   Glyph* glyph = new Glyph(face_->glyph);
@@ -98,6 +99,6 @@ long Font::kerning_offset(char prev, char curr) {
 
 void Font::print_error(std::string message, int error) {
     std::cerr << message << ": " << error << std::endl;
-    exit( 1 );
+    exit(1);
 }
 

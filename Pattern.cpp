@@ -5,10 +5,15 @@
 
 #include "Pattern.h"
 
-Pattern::Pattern(Bitmap* bitmap) : bitmap_{bitmap} {}
+Pattern::Pattern(Bitmap* bitmap)
+    : width_{bitmap->width()},
+      height_{bitmap->height()},
+      bitmap_{bitmap} {}
 
 Pattern::Pattern(Bitmap* bitmap, std::string rule)
-    : bitmap_{bitmap},
+    : width_{bitmap->width()},
+      height_{bitmap->height()},
+      bitmap_{bitmap},
       rule_{rule} {}
 
 Pattern::~Pattern() { delete bitmap_; }
@@ -84,8 +89,8 @@ void Pattern::save_as_rle(std::string outfile) {
 }
 
 Bitmap* Pattern::bitmap() const { return bitmap_; }
-unsigned int Pattern::width() const { return bitmap_->width(); }
-unsigned int Pattern::height() const { return bitmap_->height(); }
+unsigned int Pattern::width() const { return width_; }
+unsigned int Pattern::height() const { return height_; }
 
 void Pattern::parse_rle_item(std::string item, Bitmap* bitmap) {
   std::regex re_split_item(R"((\d+)?([bo\$]))");

@@ -15,6 +15,7 @@ class Bitmap {
   unsigned int width() const;
   unsigned int height() const;
   unsigned int cursor() const;
+  unsigned char* pixels() const;
 
  private:
   bool write_bits(unsigned int, bool);

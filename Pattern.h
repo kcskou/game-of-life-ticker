@@ -21,6 +21,8 @@ class Pattern {
  private:
   static void parse_rle_item(std::string, Bitmap*);
 
+  unsigned int width_;
+  unsigned int height_;
   Bitmap* bitmap_;
   std::string rule_;
 };

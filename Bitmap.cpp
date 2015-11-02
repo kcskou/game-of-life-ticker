@@ -61,3 +61,4 @@ bool Bitmap::write_bits(unsigned int num_bits, bool set_bits) {
 unsigned int Bitmap::width() const { return width_; }
 unsigned int Bitmap::height() const { return height_; }
 unsigned int Bitmap::cursor() const { return cursor_; }
+unsigned char* Bitmap::pixels() const { return pixels_; }

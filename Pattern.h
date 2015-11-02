@@ -12,6 +12,7 @@ class Pattern {
   ~Pattern();
 
   static Pattern* from_rle(std::string);
+  void save_as_rle(std::string);
 
   Bitmap* bitmap() const;
   unsigned int width() const;

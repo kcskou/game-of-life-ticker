@@ -66,6 +66,23 @@ Pattern* Pattern::from_rle(std::string file) {
   return p;
 }
 
+void Pattern::save_as_rle(std::string outfile) {
+  std::ofstream rle_file(outfile.c_str());
+  if (rle_file.is_open()) {
+    rle_file << "x = " << width() << ", " << "y = " << height();
+    if (!rule_.empty()) {
+      rle_file << ", " << "rule = " << rule_;
+    }
+    rle_file << std::endl;
+
+    // rle_file << 30 << std::endl;
+    // rle_file << '$' << std::endl;
+    rle_file.close();
+  } else {
+    std::cerr << "Unable to open file to save pattern." << std::endl;
+  }
+}
+
 Bitmap* Pattern::bitmap() const { return bitmap_; }
 unsigned int Pattern::width() const { return bitmap_->width(); }
 unsigned int Pattern::height() const { return bitmap_->height(); }

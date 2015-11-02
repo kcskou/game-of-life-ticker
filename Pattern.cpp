@@ -72,6 +72,8 @@ Pattern* Pattern::from_rle(std::string file) {
 }
 
 void Pattern::save_as_rle(std::string outfile) {
+  // FIXME: use all 70 characters per line
+  // FIXME: $'s needs to be group together e.g. 2$ instead of $$
   std::ofstream rle_file(outfile.c_str());
   if (rle_file.is_open()) {
     rle_file << "x = " << width() << ", " << "y = " << height();
@@ -79,9 +81,29 @@ void Pattern::save_as_rle(std::string outfile) {
       rle_file << ", " << "rule = " << rule_;
     }
     rle_file << std::endl;
-
-    // rle_file << 30 << std::endl;
-    // rle_file << '$' << std::endl;
+    
+    unsigned char* pixels =  bitmap_->pixels();
+    for (unsigned int row = 0; row < height_; row++) {
+      unsigned int run_count = 1;
+      for (unsigned int col = 0; col < width_ - 1; col++) {
+        unsigned char current_bit = pixels[row * width_ + col];
+        unsigned char next_bit = pixels[row * width_ + col + 1];
+        if (current_bit != next_bit) {
+            if (run_count > 1) { rle_file << run_count; }
+            rle_file << (current_bit ? 'o' : 'b');
+            run_count = 1;
+        } else {
+            run_count++;
+        }
+      }
+      unsigned char last_bit = pixels[(row + 1) * width_ - 1];
+      if (last_bit) {
+        if (run_count > 1) { rle_file << run_count; }
+        rle_file << 'o';
+      }
+      if (row != height_ - 1) { rle_file << '$' << std::endl; }
+    }
+    rle_file << '!';
     rle_file.close();
   } else {
     std::cerr << "Unable to open file to save pattern." << std::endl;
@@ -104,6 +126,12 @@ void Pattern::parse_rle_item(std::string item, Bitmap* bitmap) {
       if (!bitmap->clear_bits(bits_to_pad)) {
         std::cerr << "error: trying to edit a completed bitmap" << std::endl;
         exit(1);
+      }
+      if (run_count > 1) {
+        if (!bitmap->clear_bits((run_count - 1) * bitmap->width())) {
+          std::cerr << "error: trying to edit a completed bitmap" << std::endl;
+          exit(1);
+        }
       }
     } else if (tag == "o") {
       if (!bitmap->set_bits(run_count)) {

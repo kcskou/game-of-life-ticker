@@ -1,9 +1,11 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <sstream>
 #include <string>
 
 #include "Pattern.h"
+#include "Rle_Writer.h"
 
 Pattern::Pattern(Bitmap* bitmap)
     : width_{bitmap->width()},
@@ -69,14 +71,15 @@ Pattern* Pattern::from_rle(std::string file) {
 }
 
 void Pattern::save_as_rle(std::string outfile) {
-  // FIXME: use all 70 characters per line
   std::ofstream rle_file(outfile.c_str());
   if (rle_file.is_open()) {
-    rle_file << "x = " << width_ << ", " << "y = " << height_;
+    std::stringstream ss;
+    ss << "x = " << width_ << ", " << "y = " << height_;
+    Rle_Writer writer{rle_file};
     if (!rule_.empty()) {
-      rle_file << ", " << "rule = " << rule_;
+      ss << ", " << "rule = " << rule_;
     }
-    rle_file << std::endl;
+    ss << std::endl;
     
     unsigned char* pixels =  bitmap_->pixels();
     unsigned int num_eol = 1;
@@ -86,8 +89,8 @@ void Pattern::save_as_rle(std::string outfile) {
         unsigned char current_bit = pixels[row * width_ + col];
         unsigned char next_bit = pixels[row * width_ + col + 1];
         if (current_bit != next_bit) {
-            if (run_count > 1) { rle_file << run_count; }
-            rle_file << (current_bit ? 'o' : 'b');
+            if (run_count > 1) { ss << run_count; }
+            ss << (current_bit ? 'o' : 'b');
             run_count = 1;
         } else {
             run_count++;
@@ -96,26 +99,26 @@ void Pattern::save_as_rle(std::string outfile) {
       unsigned char last_bit = pixels[(row + 1) * width_ - 1];
       if (last_bit) {
         // line ends with 1, print the live cells 
-        if (run_count > 1) { rle_file << run_count; }
-        rle_file << 'o';
+        if (run_count > 1) { ss << run_count; }
+        ss << 'o';
         num_eol = 1;
       } else if (run_count == width_ && row != 0) {
         // empty line, move back cursor and update run_count of $
         unsigned int move_back = (num_eol == 1) ? 1 : num_digits(num_eol) + 1;
-        long pos = rle_file.tellp();
-        rle_file.seekp(pos - move_back);
-        rle_file << ++num_eol;
+        long pos = ss.tellp();
+        ss.seekp(pos - move_back);
+        ss << ++num_eol;
       } else {
         // not empty line, reset num_eol
         num_eol = 1;
       }
       if (row != height_ - 1) {
           // not the last row, print $
-          rle_file << '$'; 
+          ss << '$'; 
       }
     }
-    rle_file << '!';
-    rle_file.close();
+    ss << '!';
+    writer.write(ss);
   } else {
     std::cerr << "Unable to open file to save pattern." << std::endl;
   }

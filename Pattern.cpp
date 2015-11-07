@@ -53,11 +53,8 @@ Pattern* Pattern::from_rle(std::string file) {
         }
         if (std::regex_search(line, match, re_rule)) {
           rule = match[1].str();
-          std::cout << "rule: " << rule << std::endl;
         }
         if (width && height) {
-          std::cout << "width: " << width << std::endl;
-          std::cout << "height: " << height << std::endl;
           bitmap = new Bitmap(width, height);
           found_header = true;
         } else {
@@ -73,16 +70,16 @@ Pattern* Pattern::from_rle(std::string file) {
 
 void Pattern::save_as_rle(std::string outfile) {
   // FIXME: use all 70 characters per line
-  // FIXME: $'s needs to be group together e.g. 2$ instead of $$
   std::ofstream rle_file(outfile.c_str());
   if (rle_file.is_open()) {
-    rle_file << "x = " << width() << ", " << "y = " << height();
+    rle_file << "x = " << width_ << ", " << "y = " << height_;
     if (!rule_.empty()) {
       rle_file << ", " << "rule = " << rule_;
     }
     rle_file << std::endl;
     
     unsigned char* pixels =  bitmap_->pixels();
+    unsigned int num_eol = 1;
     for (unsigned int row = 0; row < height_; row++) {
       unsigned int run_count = 1;
       for (unsigned int col = 0; col < width_ - 1; col++) {
@@ -98,10 +95,24 @@ void Pattern::save_as_rle(std::string outfile) {
       }
       unsigned char last_bit = pixels[(row + 1) * width_ - 1];
       if (last_bit) {
+        // line ends with 1, print the live cells 
         if (run_count > 1) { rle_file << run_count; }
         rle_file << 'o';
+        num_eol = 1;
+      } else if (run_count == width_ && row != 0) {
+        // empty line, move back cursor and update run_count of $
+        unsigned int move_back = (num_eol == 1) ? 1 : num_digits(num_eol) + 1;
+        long pos = rle_file.tellp();
+        rle_file.seekp(pos - move_back);
+        rle_file << ++num_eol;
+      } else {
+        // not empty line, reset num_eol
+        num_eol = 1;
       }
-      if (row != height_ - 1) { rle_file << '$' << std::endl; }
+      if (row != height_ - 1) {
+          // not the last row, print $
+          rle_file << '$'; 
+      }
     }
     rle_file << '!';
     rle_file.close();
@@ -146,4 +157,14 @@ void Pattern::parse_rle_item(std::string item, Bitmap* bitmap) {
     }
     item = match.suffix().str();
   }
+}
+
+unsigned int Pattern::num_digits(unsigned int num) {
+  unsigned int digits = 0;
+  if (num < 0) digits = 1;
+  while (num) {
+    num /= 10;
+    digits++;
+  }
+  return digits;
 }

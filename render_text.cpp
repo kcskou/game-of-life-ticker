@@ -28,11 +28,29 @@ int main(int argc, char** argv) {
   // loaf->bitmap()->print();
   // delete loaf;
 
-  Pattern* weekender = Pattern::from_rle("patterns/weekender.rle");
-  std::cout << "print weekender:" << std::endl;
-  weekender->bitmap()->print();
-  weekender->save_as_rle("patterns/myweekender.rle");
-  delete weekender;
+  // Pattern* weekender = Pattern::from_rle("patterns/weekender.rle");
+  // std::cout << "print weekender:" << std::endl;
+  // weekender->bitmap()->print();
+  // weekender->save_as_rle("patterns/myweekender.rle");
+  // delete weekender;
+
+  // Pattern* empty = Pattern::from_rle("patterns/empty.rle");
+  // empty->bitmap()->print();
+  // delete empty;
+
+  Bitmap* zebra = new Bitmap(4, 6);
+  int n = 3;
+  while (n--) {
+    zebra->set_bits(2);
+  }
+  zebra->clear_bits(4);
+  zebra->clear_bits(4);
+  zebra->set_bits(4);
+  Pattern* test = new Pattern(zebra);
+  test->bitmap()->print();
+  test->save_as_rle("patterns/test.rle");
+  delete test;
+
 
   return 0;
 }

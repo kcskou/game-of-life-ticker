@@ -20,6 +20,7 @@ class Pattern {
 
  private:
   static void parse_rle_item(std::string, Bitmap*);
+  static unsigned int num_digits(unsigned int);
 
   unsigned int width_;
   unsigned int height_;

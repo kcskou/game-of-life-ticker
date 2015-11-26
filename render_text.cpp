@@ -17,26 +17,5 @@ int main(int argc, char** argv) {
   delete bitmap;
   delete font;
 
-  // testing rle parser
-  // Pattern* glider = Pattern::from_rle("patterns/glider.rle");
-  // std::cout << "print glider:" << std::endl;
-  // glider->bitmap()->print();
-  // delete glider;
-
-  // Pattern* loaf = Pattern::from_rle("patterns/loaf.rle");
-  // std::cout << "print loaf:" << std::endl;
-  // loaf->bitmap()->print();
-  // delete loaf;
-
-  Pattern* weekender = Pattern::from_rle("patterns/weekender.rle");
-  std::cout << "print weekender:" << std::endl;
-  weekender->bitmap()->print();
-  weekender->save_as_rle("patterns/myweekender.rle");
-  delete weekender;
-
-  Pattern* ticker = Pattern::from_rle("patterns/TickerEXTemplate.rle");
-  ticker->save_as_rle("patterns/myticker.rle");
-  delete ticker;
-
   return 0;
 }

@@ -121,6 +121,7 @@ void Pattern::save_as_rle(std::string outfile) {
     writer.write(ss);
   } else {
     std::cerr << "Unable to open file to save pattern." << std::endl;
+    exit(1);
   }
 }
 
